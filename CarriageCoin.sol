@@ -26,8 +26,10 @@ contract CCoin is IERC20, owned {
     uint256 public sellPrice;
     //1 ether = 35 C$
     uint256 public buyPrice = 35;
+
+    uint256 public constant _initialSupply = 300000000 * (10 ** uint256(decimals));//60% to iCarriage
     
-    uint public _totalSupply = 300000000;  //60% to iCarriage
+    uint256 public _totalSupply; 
     
     string public constant symbol = "C$";
     string public constant name = "CCoin";
@@ -42,6 +44,11 @@ contract CCoin is IERC20, owned {
     mapping(address => uint256) balances;
     mapping(address => mapping(address => uint256)) allowed;
    
+   function CCoin() public {
+        owner = msg.sender;
+       _totalSupply = _initialSupply;
+       balances[owner] = _initialSupply;
+    }
     
     function crowdSaleOpenClosed() onlyOwner public returns (bool success) {
         if(crowdSaleClosed){
@@ -84,9 +91,7 @@ contract CCoin is IERC20, owned {
     }
     
     
-    function CCoin() public {
-        owner = msg.sender;
-    }
+    
     
     function createCoins() public payable{
         require(msg.value > 0);
