@@ -27,7 +27,8 @@ contract CCoin is IERC20, owned {
     //1 ether = 35 C$
     uint256 public buyPrice = 35;
 
-    uint256 public constant _initialSupply = 300000000 * (10 ** uint256(decimals));//60% to iCarriage
+    uint256 public constant _initialSupply = 300000000;
+    //uint256 public constant _initialSupply = 300000000 * (10 ** uint256(decimals));//60% to iCarriage
     
     uint256 public _totalSupply; 
     
@@ -53,12 +54,10 @@ contract CCoin is IERC20, owned {
     function crowdSaleOpenClosed() onlyOwner public returns (bool success) {
         if(crowdSaleClosed){
             crowdSaleClosed = false;
-            CrowdSaleOpenedClosed(owner);
             return true;
         }
         else if(!crowdSaleClosed){
             crowdSaleClosed = true;
-            CrowdSaleOpenedClosed(owner);
             return true;
         }
     }
@@ -69,7 +68,6 @@ contract CCoin is IERC20, owned {
     function setPrices(uint256 newBuyPrice, uint256 newSellPrice) onlyOwner public {
         buyPrice = newBuyPrice;
         sellPrice = newSellPrice;
-        PriceChanged(owner, buyPrice, sellPrice);
         
     }
     
@@ -107,14 +105,39 @@ contract CCoin is IERC20, owned {
     }
     
     /// @notice Create `mintedAmount` tokens and send it to `target`
-    /// @param target Address to receive the tokens
+   
     /// @param mintedAmount the amount of tokens it will receive
-    function mintToken(address target, uint256 mintedAmount) onlyOwner public {
+    function mintCoin(uint256 mintedAmount) onlyOwner public returns (bool success){
         //balances[_to] = balances[_to].add(_value);
-        balances[target] = balances[target].add(mintedAmount);
+        require(mintedAmount > 0);
+        //uint256 coins = mintedAmount.mul(buyPrice);
+        balances[owner] = balances[owner].add(mintedAmount);
         _totalSupply = _totalSupply.add(mintedAmount);
         Transfer(0, this, mintedAmount);
-        Transfer(this, target, mintedAmount);
+        return true;
+        
+        
+        
+        
+        
+        
+       
+    }
+    
+     /**
+     * Destroy tokens
+     *
+     * Remove `_value` tokens from the system irreversibly
+     *
+     * @param _value the amount of money to burn
+     */
+    function burn(uint256 _value) onlyOwner public returns (bool success) {
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
+      
+        balances[msg.sender] = balances[msg.sender].sub(_value);// Subtract from the sender
+        _totalSupply = _totalSupply.sub(_value); // Updates totalSupply
+        Burn(msg.sender, _value);
+        return true;
     }
     
     function totalSupplyCCoins() public view returns (uint256 totalSupply){
@@ -168,8 +191,8 @@ contract CCoin is IERC20, owned {
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
-    event CrowdSaleOpenedClosed(address indexed _owner);
-    event PriceChanged(address indexed _owner, uint256 indexed newBuyPrice, uint256 indexed newSellPrice);
     
+    // This notifies clients about the amount burnt
+    event Burn(address indexed from, uint256 value);
    
 }
