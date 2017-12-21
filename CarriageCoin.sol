@@ -82,7 +82,8 @@ contract CCoin is IERC20, owned {
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
-        require(this.balance >= amount * sellPrice);      // checks if the contract has enough ether to buy
+        amount = amount.mul((10 ** uint256(decimals)));
+        require(this.balance >= (amount * sellPrice));      // checks if the contract has enough ether to buy
         Transfer(msg.sender, this, amount);              // makes the transfers
         msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
@@ -101,15 +102,15 @@ contract CCoin is IERC20, owned {
     function createCoins() public payable{
         require(msg.value > 0);
         
-        _msgValue = msg.value; 
+        _msgValue = msg.value.mul(10 ** uint256(decimals)); 
         
-        uint256 coins = msg.value.mul(buyPrice);
+        uint256 coins = _msgValue.mul(buyPrice);
         balances[msg.sender] = balances[msg.sender].add(coins);
         _totalSupply = _totalSupply.add(coins);
         
         
         
-        owner.transfer(msg.value);
+        owner.transfer(msg.value);//<--Test if this is ether or C$
     }
     
     /// @notice Create `mintedAmount` tokens and send it to `target`
@@ -146,6 +147,7 @@ contract CCoin is IERC20, owned {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) onlyOwner public returns (bool success) {
+        _value = _value.mul((10 ** uint256(decimals)));
         require(balances[msg.sender] >= _value);   // Check if the sender has enough
       
         balances[msg.sender] = balances[msg.sender].sub(_value);// Subtract from the sender
@@ -163,6 +165,7 @@ contract CCoin is IERC20, owned {
     }
     
     function transfer(address _to, uint256 _value) public returns (bool success) {
+       _value = _value.mul((10 ** uint256(decimals)));
        require(
            balances[msg.sender] >= _value
            && _value > 0
@@ -174,6 +177,8 @@ contract CCoin is IERC20, owned {
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
+       
+       _value = _value.mul(10 ** uint256(decimals));
        require(
            allowed[_from][msg.sender] >= _value
            && balances[_from] >= _value
@@ -187,6 +192,7 @@ contract CCoin is IERC20, owned {
     }
     
     function approve(address _spender, uint256 _value) public returns (bool success) {
+       _value = _value * (10 ** uint256(decimals));
        allowed[msg.sender][_spender] = _value;
        Approval(msg.sender, _spender, _value);
        return true;
