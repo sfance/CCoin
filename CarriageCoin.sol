@@ -122,9 +122,10 @@ contract CCoin is IERC20, owned {
         //balances[_to] = balances[_to].add(_value);
         require(mintedAmount > 0);
         //uint256 coins = mintedAmount.mul(buyPrice);
-        balances[owner] = balances[owner].add(mintedAmount);
-        _totalSupply = _totalSupply.add(mintedAmount);
-        Transfer(0, this, mintedAmount);
+        uint256 coins = mintedAmount * (10 ** uint256(decimals);
+        balances[owner] = balances[owner].add(coins);
+        _totalSupply = _totalSupply.add(coins);
+        Transfer(0, this, coins);
         return true;
         
         
