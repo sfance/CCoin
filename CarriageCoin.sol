@@ -75,7 +75,7 @@ contract CCoin is IERC20, owned {
     }
     
     /// @notice Allow owner to set max number of carriage coins
-    /// @param nmaxCCoins the number of ccoins to set as the maximum
+    /// @param maxCCoins the number of ccoins to set as the maximum
     function setMaxSupplyCCoins(uint256 maxCCoins) onlyOwner public {
         _maxSupply = maxCCoins *  (10 ** uint256(decimals));
     }    
