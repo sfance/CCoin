@@ -27,14 +27,17 @@ contract CCoin is IERC20, owned {
     //1 ether = 35 C$
     uint256 public buyPrice = 35;
 
-    uint256 public constant _initialSupply = 300000000;
-    //uint256 public constant _initialSupply = 300000000 * (10 ** uint256(decimals));//60% to iCarriage
+    //uint256 public constant _initialSupply = 300000000;
+    uint8 public constant decimals = 18;
+    uint256 public constant _initialSupply = 300000000 * (10 ** uint256(decimals));//60% to iCarriage
+    uint256 public _maxSupply = 500000000 * (10 ** uint256(decimals));//60% to iCarriage
+    
     
     uint256 public _totalSupply; 
     
     string public constant symbol = "C$";
     string public constant name = "CCoin";
-    uint8 public constant decimals = 18;
+    uint256 _msgValue;
     
   
     
@@ -71,6 +74,13 @@ contract CCoin is IERC20, owned {
         
     }
     
+    /// @notice Allow users to buy tokens for `newBuyPrice` eth and sell tokens for `newSellPrice` eth
+    /// @param newSellPrice Price the users can sell to the contract
+    /// @param newBuyPrice Price users can buy from the contract
+    function setMaxSupplyCCoins(uint256 maxCCoins) onlyOwner public {
+        _maxSupply = maxCCoins *  (10 ** uint256(decimals));
+    }    
+    
     
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
@@ -94,12 +104,14 @@ contract CCoin is IERC20, owned {
     function createCoins() public payable{
         require(msg.value > 0);
         
+        _msgValue = msg.value; 
+        
         uint256 coins = msg.value.mul(buyPrice);
         balances[msg.sender] = balances[msg.sender].add(coins);
         _totalSupply = _totalSupply.add(coins);
         
         owner.transfer(msg.value);
-        if(_totalSupply >= 500000000) {  //cap on coin max supply
+        if(_totalSupply >= _maxSupply) {  //cap on coin max supply
             crowdSaleClosed = true; 
         }
     }
@@ -187,6 +199,13 @@ contract CCoin is IERC20, owned {
         selfdestruct(owner);
     }
     
+    function lastMessageVal() public view returns (uint256 lastMessageValue){
+        return _msgValue;
+    }
+    
+    function maxSupplyCCoins() onlyOwner public view returns (uint256 maxSupply){
+        return _maxSupply;
+    }
    
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
