@@ -15,9 +15,7 @@ import './SafeMath.sol';
             _;
         }
 
-        function transferOwnership(address newOwner) public onlyOwner {
-            owner = newOwner;
-        }
+        
     }
 
 contract CCoin is IERC20, owned {
@@ -30,7 +28,7 @@ contract CCoin is IERC20, owned {
     //uint256 public constant _initialSupply = 300000000;
     uint8 public constant decimals = 18;
     uint256 public constant _initialSupply = 300000000 * (10 ** uint256(decimals));//60% to iCarriage
-    uint256 public _maxSupply = 500000000 * (10 ** uint256(decimals));//60% to iCarriage
+    uint256 public _maxSupply = 500000000 * (10 ** uint256(decimals));//
     
     
     uint256 public _totalSupply; 
@@ -109,10 +107,9 @@ contract CCoin is IERC20, owned {
         balances[msg.sender] = balances[msg.sender].add(coins);
         _totalSupply = _totalSupply.add(coins);
         
+        
+        
         owner.transfer(msg.value);
-        if(_totalSupply >= _maxSupply) {  //cap on coin max supply
-            crowdSaleClosed = true; 
-        }
     }
     
     /// @notice Create `mintedAmount` tokens and send it to `target`
@@ -124,7 +121,12 @@ contract CCoin is IERC20, owned {
         //uint256 coins = mintedAmount.mul(buyPrice);
         uint256 coins = mintedAmount * (10 ** uint256(decimals));
         balances[owner] = balances[owner].add(coins);
+        
         _totalSupply = _totalSupply.add(coins);
+        if(_totalSupply > _maxSupply){
+            _maxSupply = _totalSupply;
+        }
+        
         Transfer(0, this, coins);
         return true;
         
