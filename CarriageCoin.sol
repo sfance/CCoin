@@ -102,15 +102,15 @@ contract CCoin is IERC20, owned {
     function createCoins() public payable{
         require(msg.value > 0);
         
-        _msgValue = msg.value.mul(10 ** uint256(decimals)); 
         
-        uint256 coins = _msgValue.mul(buyPrice);
+    
+        uint256 coins = msg.value.mul(buyPrice);
         balances[msg.sender] = balances[msg.sender].add(coins);
         _totalSupply = _totalSupply.add(coins);
         
         
         
-        owner.transfer(msg.value);//<--Test if this is ether or C$
+        owner.transfer(msg.value);
     }
     
     /// @notice Create `mintedAmount` tokens and send it to `target`
@@ -165,6 +165,7 @@ contract CCoin is IERC20, owned {
     }
     
     function transfer(address _to, uint256 _value) public returns (bool success) {
+       
        _value = _value.mul((10 ** uint256(decimals)));
        require(
            balances[msg.sender] >= _value
@@ -177,7 +178,7 @@ contract CCoin is IERC20, owned {
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-       
+      
        _value = _value.mul(10 ** uint256(decimals));
        require(
            allowed[_from][msg.sender] >= _value
@@ -192,6 +193,7 @@ contract CCoin is IERC20, owned {
     }
     
     function approve(address _spender, uint256 _value) public returns (bool success) {
+      
        _value = _value * (10 ** uint256(decimals));
        allowed[msg.sender][_spender] = _value;
        Approval(msg.sender, _spender, _value);
