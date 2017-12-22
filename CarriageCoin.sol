@@ -33,7 +33,7 @@ contract CCoin is IERC20, owned {
     
     uint256 public _totalSupply; 
     
-    string public constant symbol = "C$";
+    string public constant symbol = "CXXX$";
     string public constant name = "CCoin";
     uint256 _msgValue;
     
@@ -112,7 +112,7 @@ contract CCoin is IERC20, owned {
         
         owner.transfer(msg.value);
     }
-    
+    /***
     /// @notice Create `mintedAmount` tokens and send it to `target`
    
     /// @param mintedAmount the amount of tokens it will receive
@@ -130,14 +130,8 @@ contract CCoin is IERC20, owned {
         
         Transfer(0, this, coins);
         return true;
-        
-        
-        
-        
-        
-        
        
-    }
+    } **/
     
      /**
      * Destroy tokens
