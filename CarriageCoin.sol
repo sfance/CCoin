@@ -81,7 +81,7 @@ contract CCoin is IERC20, owned {
     /// @notice Allow owner to set max number of carriage coins
     /// @param minPurchaseAmount the number of ccoins to set as the maximum
     function setMinPurchaseAmount(uint256 minPurchaseAmount) onlyOwner public {
-        _minPurchase = minPurchaseAmount * 1 ether;
+        _minPurchase = minPurchaseAmount.mul(1 ether);
     }     
     
     /// @notice Sell `amount` tokens to contract
