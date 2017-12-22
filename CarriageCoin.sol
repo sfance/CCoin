@@ -29,7 +29,7 @@ contract CCoin is IERC20, owned {
     uint8 public constant decimals = 18;
     uint256 public constant _initialSupply = 300000000 * (10 ** uint256(decimals));//60% to iCarriage
     uint256 public _maxSupply = 500000000 * (10 ** uint256(decimals));//
-    
+    uint256 public _minPurchase = .25 ether;
     
     uint256 public _totalSupply; 
     
@@ -78,6 +78,11 @@ contract CCoin is IERC20, owned {
         _maxSupply = maxCCoins *  (10 ** uint256(decimals));
     }    
     
+    /// @notice Allow owner to set max number of carriage coins
+    /// @param minPurchaseAmount the number of ccoins to set as the maximum
+    function setMinPurchaseAmount(uint256 minPurchaseAmount) onlyOwner public {
+        _minPurchase = minPurchaseAmount * 1 ether;
+    }     
     
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
@@ -90,7 +95,7 @@ contract CCoin is IERC20, owned {
     
     function () external payable {
         //require(!crowdSaleClosed);
-        require(msg.value >= .25 ether);  //Minimum coin purchase for ICO
+        require(msg.value >= _minPurchase);  //Minimum coin purchase for ICO
         if(crowdSaleClosed) revert();
     
         createCoins();
@@ -210,7 +215,10 @@ contract CCoin is IERC20, owned {
     function maxSupplyCCoins() onlyOwner public view returns (uint256 maxSupply){
         return _maxSupply;
     }
-   
+    
+    function minPurchaseAmount() onlyOwner public view returns (uint256 minPurchase){
+        return _minPurchase;
+    }
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
