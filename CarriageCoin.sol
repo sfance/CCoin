@@ -33,7 +33,7 @@ contract CCoin is IERC20, owned {
     
     uint256 public _totalSupply; 
     
-    string public constant symbol = "CXXX$";
+    string public constant symbol = "C$";
     string public constant name = "CCoin";
     uint256 _msgValue;
     
